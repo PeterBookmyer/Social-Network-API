@@ -19,7 +19,7 @@ const thoughtSchema = new Schema(
     reactions: [
       {
         type: reactionSchema.Types.ObjectId,
-        ref: "reactions",
+        ref: "reaction",
       },
     ],
   },
@@ -31,7 +31,7 @@ const thoughtSchema = new Schema(
   }
 );
 
-// Create a virtual property `fullName` that gets and sets the user's full name
+
 thoughtSchema
   .virtual("reactionCount")
   // Getter

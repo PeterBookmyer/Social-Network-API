@@ -3,14 +3,17 @@ const User = require("../models/User");
 module.exports = {
   // get all users
   getUsers(req, res) {
+    console.log("working");
     User.find()
       .then((users) => res.json(users))
-      .catch((err) => res.status(500).json(err));
+      .catch((err) => {
+        console.log(err);
+        res.status(500).json(err);
+      });
   },
-  //   get single user
+  // get single user
   getSingleUser(req, res) {
     User.findOne({ _id: req.params.userId })
-      .select("-__v")
       .then((user) =>
         !user
           ? res.status(404).json({ message: "No user with that ID" })
@@ -21,16 +24,12 @@ module.exports = {
   // create a new user
   createUser(req, res) {
     User.create(req.body)
-      .then((dbUserData) => res.json(dbUserData))
+      .then((newUser) => res.json(newUser))
       .catch((err) => res.status(500).json(err));
   },
   // update a user
   updateUser(req, res) {
-    User.findOneAndUpdate(
-      { _id: req.params.userId },
-      { $set: req.body },
-      { runValidators: true, new: true }
-    )
+    User.findOneAndUpdate({ _id: req.params.userId }, { $set: req.body })
       .then((user) =>
         !user
           ? res.status(404).json({ message: "No user with this id!" })
@@ -47,11 +46,7 @@ module.exports = {
       .then((user) =>
         !user
           ? res.status(404).json({ message: "No user with this id!" })
-          : User.findOneAndUpdate(
-              { users: req.params.userId },
-              { $pull: { users: req.params.userId } },
-              { new: true }
-            )
+          : res.json(user)
       )
       .catch((err) => res.status(500).json(err));
   },
@@ -59,7 +54,7 @@ module.exports = {
   addFriend(req, res) {
     User.findOneAndUpdate(
       { _id: req.params.userId },
-      { $addToSet: { friends: req.body } },
+      { $addToSet: { friends: req.body.friendId } },
       { runValidators: true, new: true }
     )
       .then((user) =>

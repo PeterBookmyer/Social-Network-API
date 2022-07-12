@@ -3,7 +3,6 @@ const User = require("../models/User");
 module.exports = {
   // get all users
   getUsers(req, res) {
-    console.log("working");
     User.find()
       .then((users) => res.json(users))
       .catch((err) => {
@@ -29,7 +28,11 @@ module.exports = {
   },
   // update a user
   updateUser(req, res) {
-    User.findOneAndUpdate({ _id: req.params.userId }, { $set: req.body })
+    User.findOneAndUpdate(
+      { _id: req.params.userId },
+      { $set: req.body },
+      { new: true }
+    )
       .then((user) =>
         !user
           ? res.status(404).json({ message: "No user with this id!" })
@@ -54,7 +57,7 @@ module.exports = {
   addFriend(req, res) {
     User.findOneAndUpdate(
       { _id: req.params.userId },
-      { $addToSet: { friends: req.body.friendId } },
+      { $addToSet: { friends: req.params.userId } },
       { runValidators: true, new: true }
     )
       .then((user) =>
@@ -74,7 +77,7 @@ module.exports = {
       .then((user) =>
         !user
           ? res.status(404).json({ message: "No user with this id!" })
-          : res.json(user)
+          : res.json({ message: "Friend Removed!" })
       )
       .catch((err) => res.status(500).json(err));
   },

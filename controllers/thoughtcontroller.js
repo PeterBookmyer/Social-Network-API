@@ -10,7 +10,7 @@ module.exports = {
 
   //   get single thought
   getSingleThought(req, res) {
-    Thoughts.findOne({ _id: req.params.thoughtId })
+    Thought.findOne({ _id: req.params.thoughtId })
       .then((thought) =>
         !thought
           ? res.status(404).json({ message: "No thought with that ID" })
@@ -25,7 +25,6 @@ module.exports = {
       .then((thought) => {
         return User.findOneAndUpdate(
           {
-            //userId is what you put into insomnia
             _id: req.body.userId,
           },
           { $addToSet: { thoughts: thought._id } },
@@ -46,7 +45,11 @@ module.exports = {
   },
   // update a thought
   updateThought(req, res) {
-    Thought.findOneAndUpdate({ _id: req.params.thoughtId }, { $set: req.body })
+    Thought.findOneAndUpdate(
+      { _id: req.params.thoughtId },
+      { $set: req.body },
+      { new: true }
+    )
       .then((thought) =>
         !thought
           ? res.status(404).json({ message: "No thought with this id!" })
@@ -104,7 +107,7 @@ module.exports = {
       .then((thought) =>
         !thought
           ? res.status(404).json({ message: "No thought with this id!" })
-          : res.json(thought)
+          : res.json({ message: "Reaction has been DELETED!" })
       )
       .catch((err) => res.status(500).json(err));
   },
